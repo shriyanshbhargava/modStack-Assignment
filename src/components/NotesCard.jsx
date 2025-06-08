@@ -74,14 +74,12 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
 
   const handleDeleteConfirm = () => {
     setIsDeleteConfirmOpen(true);
-    toast.success("Note Deleted successfully");
-
   };
 
   const confirmDelete = () => {
     try {
-      onDelete(note.id);
       toast.success("Note deleted successfully");
+      onDelete(note.id);
       closeModal();
     } catch (error) {
       toast.error("Failed to delete note");
@@ -202,7 +200,10 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+              <div
+                className="p-4 sm:p-6 overflow-y-auto"
+                style={{ maxHeight: "calc(90vh - 200px)" }}
+              >
                 {isEditing ? (
                   <textarea
                     name="content"
