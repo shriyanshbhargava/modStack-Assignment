@@ -37,16 +37,23 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="text-center max-w-sm w-full">
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-2 sm:border-3 lg:border-4 border-gray-200 border-t-blue-600 mx-auto mb-3 sm:mb-4"></div>
+
+          <p className="text-gray-600 text-sm sm:text-base lg:text-lg font-medium">
+            Loading...
+          </p>
+
+          <div className="mt-4 w-full bg-gray-200 rounded-full h-1 sm:h-1.5 overflow-hidden">
+            <div className="h-full bg-blue-600 rounded-full animate-pulse"></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  return routes;
+  return <div className="min-h-screen w-full">{routes}</div>;
 }
 
 export default App;

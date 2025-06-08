@@ -6,6 +6,8 @@ import {
   ChevronDown,
   LogOut,
   User,
+  Menu,
+  X,
 } from "lucide-react";
 import { useAuthContext } from "../context/AuthContext";
 import { notesStorage } from "../utils/localStorage";
@@ -21,6 +23,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   // Load notes on component mount
@@ -56,6 +59,18 @@ const Dashboard = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  // Close mobile menu when screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleLogout = () => {
@@ -122,133 +137,225 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img
-              src="https://i.ibb.co/Hf3X7ZkY/df-removebg-preview.png"
-              alt="ModStack Notes"
-              className="w-8 h-8 object-contain"
-            />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ModStack Notes
-            </h1>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search notes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          {/* Desktop Header */}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img
+                src="https://i.ibb.co/Hf3X7ZkY/df-removebg-preview.png"
+                alt="ModStack Notes"
+                className="w-8 h-8 object-contain"
               />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                ModStack Notes
+              </h1>
             </div>
-            <button
-              onClick={() => setIsCreating(true)}
-              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <PlusCircle className="w-5 h-5" />
-              <span>New Note</span>
-            </button>
 
-            {/* User Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex items-center space-x-2">
-                  {user?.picture ? (
-                    <img
-                      src={user.picture}
-                      alt={user.name || user.email}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-gray-600" />
-                    </div>
-                  )}
-                  <span className="text-sm font-medium text-gray-700 max-w-24 ">
-                    {user?.given_name || user?.email || "User"}
-                  </span>
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-500 transition-transform ${
-                    isDropdownOpen ? "rotate-180" : ""
-                  }`}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
                 />
+              </div>
+              <button
+                onClick={() => setIsCreating(true)}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span>New Note</span>
               </button>
 
-              {/* Dropdown Menu */}
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {/* User Info Section */}
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <div className="flex items-center space-x-3">
-                      {user?.picture ? (
-                        <img
-                          src={user.picture}
-                          alt={user.name || user.email}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-gray-600" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {user?.name || "User"}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {user?.email}
-                        </p>
-                        {user?.email_verified !== undefined && (
-                          <div className="flex items-center mt-1">
-                            <span className="text-xs text-gray-500">
-                              Email verified:{" "}
-                            </span>
-                            <span
-                              className={`text-xs ml-1 ${
-                                user.email_verified
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {user.email_verified ? "Yes" : "No"}
-                            </span>
+              {/* User Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center space-x-2">
+                    {user?.picture ? (
+                      <img
+                        src={user.picture}
+                        alt={user.name || user.email}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-600" />
+                      </div>
+                    )}
+                    <span className="text-sm font-medium text-gray-700 max-w-24 truncate">
+                      {user?.given_name || user?.email || "User"}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-500 transition-transform ${
+                      isDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    {/* User Info Section */}
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <div className="flex items-center space-x-3">
+                        {user?.picture ? (
+                          <img
+                            src={user.picture}
+                            alt={user.name || user.email}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-gray-600" />
                           </div>
                         )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {user?.name || "User"}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {user?.email}
+                          </p>
+                          {user?.email_verified !== undefined && (
+                            <div className="flex items-center mt-1">
+                              <span className="text-xs text-gray-500">
+                                Email verified:{" "}
+                              </span>
+                              <span
+                                className={`text-xs ml-1 ${
+                                  user.email_verified
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                {user.email_verified ? "Yes" : "No"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Logout Option */}
-                  <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
+                    {/* Logout Option */}
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Mobile Header */}
+          <div className="md:hidden flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img
+                src="https://i.ibb.co/Hf3X7ZkY/df-removebg-preview.png"
+                alt="ModStack Notes"
+                className="w-7 h-7 object-contain"
+              />
+              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                ModStack Notes
+              </h1>
+            </div>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-gray-600" />
+              ) : (
+                <Menu className="w-6 h-6 text-gray-600" />
+              )}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4 space-y-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* New Note Button */}
+              <button
+                onClick={() => {
+                  setIsCreating(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span>New Note</span>
+              </button>
+
+              {/* User Info */}
+              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                {user?.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name || user.email}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-600" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {user?.name || "User"}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {user?.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center justify-center space-x-2 text-red-600 px-4 py-3 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {isCreating && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-200">
             <h3 className="text-lg font-semibold mb-4">Create New Note</h3>
             <input
               type="text"
@@ -257,7 +364,7 @@ const Dashboard = () => {
               onChange={(e) =>
                 setNewNote({ ...newNote, title: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             />
             <textarea
               placeholder="Write your note here..."
@@ -266,18 +373,18 @@ const Dashboard = () => {
                 setNewNote({ ...newNote, content: e.target.value })
               }
               rows="6"
-              className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm sm:text-base"
             />
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={handleCreateNote}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
               >
                 Save Note
               </button>
               <button
                 onClick={resetForm}
-                className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -286,7 +393,7 @@ const Dashboard = () => {
         )}
 
         {/* Notes Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredNotes.map((note) => (
             <NotesCard
               key={note.id}
@@ -299,12 +406,12 @@ const Dashboard = () => {
 
         {/* Empty State */}
         {filteredNotes.length === 0 && !isCreating && (
-          <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+          <div className="text-center py-12 sm:py-16 px-4">
+            <BookOpen className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
               {searchQuery ? "No notes found" : "No notes yet"}
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-500 mb-6 text-sm sm:text-base max-w-md mx-auto">
               {searchQuery
                 ? `No notes match "${searchQuery}". Try a different search term.`
                 : "Create your first note to get started!"}
@@ -312,7 +419,7 @@ const Dashboard = () => {
             {!searchQuery && (
               <button
                 onClick={() => setIsCreating(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
               >
                 Create First Note
               </button>
