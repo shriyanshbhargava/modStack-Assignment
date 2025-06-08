@@ -74,6 +74,8 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
 
   const handleDeleteConfirm = () => {
     setIsDeleteConfirmOpen(true);
+    toast.success("Note Deleted successfully");
+
   };
 
   const confirmDelete = () => {
