@@ -150,7 +150,7 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -165,7 +165,7 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
                     name="title"
                     value={editedNote.title}
                     onChange={handleInputChange}
-                    className="font-semibold text-gray-800 flex-1 mr-2 sm:mr-4 border rounded px-2 py-1 text-sm sm:text-base"
+                    className=" font-semibold text-gray-800 flex-1 mr-2 sm:mr-4 border rounded px-2 py-1 text-sm sm:text-base"
                   />
                 ) : (
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex-1 mr-2 sm:mr-4 line-clamp-2">
@@ -200,10 +200,7 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
                 </div>
               </div>
 
-              <div
-                className="p-4 sm:p-6 overflow-y-auto"
-                style={{ maxHeight: "calc(90vh - 200px)" }}
-              >
+              <div className="p-4 sm:p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
                 {isEditing ? (
                   <textarea
                     name="content"
@@ -237,7 +234,7 @@ const NotesCard = ({ note, onEdit, onDelete }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          className="fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
